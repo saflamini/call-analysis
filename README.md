@@ -2,7 +2,7 @@
 
 ## A project which enables video call transcription & analysis
 
-A live deployment can be found at: 
+A live deployment can be found at: https://call-analysis.vercel.app/
 
 ### Core Technologies Used
 - AssemblyAI for core transcriptions and & audio intelligence

@@ -1,11 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 import axios from 'axios';
 import './CreateCompletion.css';
-import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+// import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { MenuItem, Select } from '@mui/material';
-import { Checkbox, FormControlLabel } from "@mui/material";
+// import { Checkbox, FormControlLabel } from "@mui/material";
 import CircularProgress from '@mui/material/CircularProgress';
 
 const CreateCompletion = ({manRefreshKey, onSaveAssemblyAIKey, onSaveOpenAIKey, supabaseClient, loggedInUser}) => {
@@ -31,21 +31,50 @@ const CreateCompletion = ({manRefreshKey, onSaveAssemblyAIKey, onSaveOpenAIKey, 
  
 
 
+    // const fetchFileNames = async () => {
+    //     try {
+    //     let userFileNames;
+    //     let { data: callembeddings, error } = await supabase.from('callembeddings').select("file_name").eq('user_id', session.user.id)
+    //     if (error) {
+    //         console.log(error)
+    //     } else {
+    //         console.log(callembeddings)
+    //         userFileNames = callembeddings
+    //         setFileNames(userFileNames)
+    //     }
+    //     } catch (error) {
+    //       console.error('Error fetching file names:', error);
+    //     }
+    //   };
+    const removeDuplicates = (arr) => {
+        return arr.filter((item, index) => {
+          return arr.findIndex((other) => other.file_name === item.file_name) === index;
+        });
+      };
+
     const fetchFileNames = async () => {
         try {
-        let userFileNames;
-        let { data: callembeddings, error } = await supabase.from('callembeddings').select("file_name").eq('user_id', session.user.id)
-        if (error) {
-            console.log(error)
-        } else {
-            console.log(callembeddings)
-            userFileNames = callembeddings
-            setFileNames(userFileNames)
-        }
+          let userFileNames;
+          let { data: callembeddings, error } = await supabase
+            .from("callembeddings")
+            .select("file_name")
+            .eq("user_id", session.user.id);
+          if (error) {
+            console.log(error);
+          } else {
+            // console.log(callembeddings);
+      
+            // Extract unique file names
+            const uniqueFileNames = removeDuplicates(callembeddings);
+            console.log(uniqueFileNames)
+            userFileNames = uniqueFileNames;
+            setFileNames(userFileNames);
+          }
         } catch (error) {
-          console.error('Error fetching file names:', error);
+          console.error("Error fetching file names:", error);
         }
       };
+      
 
       useEffect(() => {
         fetchFileNames();
@@ -172,6 +201,7 @@ const CreateCompletion = ({manRefreshKey, onSaveAssemblyAIKey, onSaveOpenAIKey, 
           console.log(error);
       }
     }
+    
 
 return (
     <div className="create-completion-container">
@@ -238,8 +268,8 @@ return (
                     style={{ width: "250px", textAlign: "center" }}
                 >
                 <MenuItem value="Search All Recordings">Search All Recordings</MenuItem>
-                {fileNames.map((fileObj) => (
-                    <MenuItem key={fileObj.file_name} value={fileObj.file_name}>
+                {fileNames.map((fileObj, index) => (
+                    <MenuItem key={index} value={fileObj.file_name}>
                     {fileObj.file_name}
                     </MenuItem>
                 ))}
